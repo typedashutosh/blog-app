@@ -1,16 +1,15 @@
 {
-  "name": "blog-app-nextjs",
+  "name": "blog-app",
   "version": "1.0.0",
-  "description": "Simple app to practice Next.js with Typescript, TailwindCSS, etc",
+  "description": "",
   "main": "index.js",
-  "repository": "https://github.com/typedashutosh/blog-app-nextjs",
   "scripts": {
     "dev": "next dev -p 5500",
     "build": "next build",
     "start": "next start"
   },
   "keywords": [],
-  "author": "Ashutosh kumar",
+  "author": "",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.0.0",
