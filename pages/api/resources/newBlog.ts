@@ -57,14 +57,28 @@ export default (req: NextApiRequest, res: NextApiResponse) => {
   } //--- POST method ends here
 
   if (req.method === 'PATCH') {
-    const { work, BlogID, title, description, content } = req.body
+    console.log(req.body.work)
+    const { work, BlogID, title, description, content, mode } = req.body
     if (work === 'UPDATE') {
-      BlogModel.findByIdAndUpdate(BlogID, { title, description, content }, { new: true }, (err, doc: IBlog) => {
+      BlogModel.findByIdAndUpdate(BlogID, { title, description, content, mode }, { new: true }, (err, doc: IBlog) => {
         if (err) {
           console.log(err)
           res.status(400).json({ err })
-        } else if (doc._id.toString() === BlogID) res.status(200).end()
+        } else if (doc._id.toString() === BlogID) res.status(200).json({ _event: 'UPDATED' })
       }) //---Doc Updated
+    }
+    if (work === 'PUBLISH') {
+      BlogModel.findByIdAndUpdate(
+        BlogID,
+        { title, description, content, mode, state: 'PUBLISHED' },
+        { new: true },
+        (err, doc: IBlog) => {
+          if (err) {
+            console.log(err)
+            res.status(400).json({ err })
+          } else if (doc._id.toString() === BlogID) res.status(200).json({ _event: 'SAVED' })
+        }
+      ) //---Doc Updated
     }
   }
 }

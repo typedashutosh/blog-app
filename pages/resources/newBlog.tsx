@@ -1,9 +1,7 @@
-import { FC, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { store } from '../../store'
 import Meta from '../../Components/Meta'
 import Router from 'next/router'
-import { useDispatch } from 'react-redux'
-import { userLoginAction } from '../../actions/user.action'
 
 const newBlog = () => {
   // console.log('fdasfda', authorised)
@@ -12,8 +10,9 @@ const newBlog = () => {
   const [title, setTitle] = useState<string>('')
   const [description, setDescription] = useState<string>('')
   const [content, setContent] = useState<string>('')
-  const [mode, setMode] = useState<'public' | 'private'>('private')
-
+  const [mode, setMode] = useState<'PUBLIC' | 'PRIVATE'>('PRIVATE')
+  const [work, setWork] = useState<'UPDATE' | 'PUBLISH'>('UPDATE')
+  const [buttondisable, setButtondisable] = useState<boolean>(false)
   //--- Setting Authenticated state
   const isServer = () => typeof window === 'undefined'
   if (!isServer()) {
@@ -22,31 +21,31 @@ const newBlog = () => {
     }
   }
   //--- Handlers
-  const draftHandler = () => {
+
+  const saveHandler = () => {
     fetch('/api/resources/newBlog', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        work: 'UPDATE',
+        work,
         BlogID: newBlogState.blogID,
         title,
         description,
-        content
+        content,
+        mode
       })
     })
-      .then((res) => console.log(res))
-      .catch((err) => console.log('newBlog.tsx draftHandler err: ', err))
+      .then((res) => res.json())
+      .then((data) => {
+        if (data._event === 'SAVED') Router.push(`/resources/${newBlogState.blogID}`)
+      })
+      .catch((err) => console.log('newBlog.tsx saveHandler err: ', err))
   }
-  let run: boolean = true
-  if (!isServer() && run) {
-    if (newBlogState.blogID) {
-      setInterval(() => {
-        draftHandler()
-      }, 10000)
-      run = false
-    }
-  }
-  //  const publishHandler = () => {}
+
+  useEffect(() => {
+    saveHandler()
+  }, [work])
+
   //  const deleteHandler = () => {}
 
   return (
@@ -84,9 +83,7 @@ const newBlog = () => {
             type='checkbox'
             name='post-as'
             id='post-as'
-            // onChange={(e) =>
-            // e.target.checked ? setMode('private') : setMode('public')
-            // }
+            onChange={(e) => (e.target.checked ? setMode('PRIVATE') : setMode('PUBLIC'))}
           />
           <label htmlFor='post-as'>Post as private</label>
           <br />
@@ -94,19 +91,27 @@ const newBlog = () => {
             className='mt-2 py-2 px-4 rounded-tl-md rounded-bl-md bg-blue-400 hover:bg-blue-500 transition-all duration-200 cursor-pointer outline-none'
             type='button'
             value='Draft'
-            onClick={draftHandler}
+            onClick={saveHandler}
+            disabled={buttondisable}
           />
           <input
             className='mt-2 py-2 px-4 bg-green-400 hover:bg-green-500 transition-all duration-200 cursor-pointer outline-none'
             type='button'
             value='Publish'
-            // onClick={publishHandler}
+            onClick={() => {
+              setButtondisable(true)
+              setWork('PUBLISH')
+            }}
+            disabled={buttondisable}
           />
           <input
             className='mt-2 py-2 px-4 rounded-tr-md rounded-br-lg bg-red-400 hover:bg-red-500 transition-all duration-200 cursor-pointer outline-none'
             type='button'
             value='Delete'
-            // onClick={deleteHandler}
+            onClick={() => {
+              setButtondisable(true)
+            }}
+            disabled={buttondisable}
           />
         </div>
       )}

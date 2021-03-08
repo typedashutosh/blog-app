@@ -6,8 +6,8 @@ export interface IBlog extends Document {
   authorID: string
   author: string
   content: string
-  mode: 'public' | 'private'
-  state: 'draft' | 'published'
+  mode: 'PUBLIC' | 'PRIVATE'
+  state: 'DRAFT' | 'PUBLISHED'
   votes: number
 }
 
