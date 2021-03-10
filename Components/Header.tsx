@@ -75,6 +75,11 @@ const Header = () => {
               Login
             </span>
           </Link>
+          <Link href='/profile'>
+            <span className='text-lg py-1 px-2 cursor-pointer border-white border-b-2 transition-all duration-200 hover:border-black font-light'>
+              Profile
+            </span>
+          </Link>
           <Link href='/signup'>
             <span className='text-lg py-1 px-2 cursor-pointer border-white border-b-2 transition-all duration-200 hover:border-black font-light'>
               Signup
