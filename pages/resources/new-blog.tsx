@@ -4,8 +4,8 @@ import Meta from '../../Components/Meta'
 import Router from 'next/router'
 
 const newBlog = () => {
-  // console.log('fdasfda', authorised)
   //--- Declare States
+
   const { userInfoState, newBlogState } = store.getState()
   const [title, setTitle] = useState<string>('')
   const [description, setDescription] = useState<string>('')
@@ -13,17 +13,20 @@ const newBlog = () => {
   const [mode, setMode] = useState<'PUBLIC' | 'PRIVATE'>('PRIVATE')
   const [work, setWork] = useState<'UPDATE' | 'PUBLISH' | 'DELETE'>('UPDATE')
   const [buttondisable, setButtondisable] = useState<boolean>(false)
+
   //--- Setting Authenticated state
+
   const isServer = () => typeof window === 'undefined'
   if (!isServer()) {
     if (!userInfoState.authorised) {
       Router.push('/login')
     }
   }
+
   //--- Handlers
 
   const saveHandler = () => {
-    fetch('/api/resources/newBlog', {
+    fetch('/api/resources/new-blog', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -40,7 +43,7 @@ const newBlog = () => {
         if (data._event === 'SAVED') Router.push(`/resources/${newBlogState.blogID}`)
         if (data._event === 'DELETED') Router.push(`/`)
       })
-      .catch((err) => console.log('newBlog.tsx saveHandler err: ', err))
+      .catch((err) => console.log('new-blog.tsx saveHandler err: ', err))
   }
 
   useEffect(() => {

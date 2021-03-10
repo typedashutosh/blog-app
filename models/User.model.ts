@@ -6,6 +6,7 @@ export interface IUser extends Document {
   lastname?: string
   username: string
   password: string
+  blogs: string[]
 }
 
 const UserSchema = new Schema<IUser>(
@@ -17,7 +18,8 @@ const UserSchema = new Schema<IUser>(
       unique: true,
       required: [true, 'Please provide a username']
     },
-    password: { type: String, required: [true, 'Please provide a Password'] }
+    password: { type: String, required: [true, 'Please provide a Password'] },
+    blogs: { type: Array, required: false }
   },
   { timestamps: true }
 )

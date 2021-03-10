@@ -28,12 +28,12 @@ const Header = () => {
   }
 
   const newBlogHandler = () => {
-    fetch('/api/resources/newBlog', { method: 'POST' })
+    fetch('/api/resources/new-blog', { method: 'POST' })
       .then((res) => res.json())
       .then((data) => {
         if (data._event === 'CREATED') {
           dispatch(newBlogAction(data))
-          Router.push('/resources/newBlog')
+          Router.push('/resources/new-blog')
         } else console.log('err:::>', data)
       })
       .catch((err) => console.log('err:::>', err))
