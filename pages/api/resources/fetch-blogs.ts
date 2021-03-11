@@ -12,9 +12,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   //--- YES! i can set cookies from here. now next target---> automatic login
 
   if (req.method === 'GET') {
-    const token: string = req.cookies.token
+    const token: string = req.cookies.auth
     jwt.verify(token, process.env.JWT_SECRET, async (err: VerifyErrors | null, decoded: any) => {
-      if (err) res.status(401).json({ _event: 'INVALID TOKEN' })
+      if (err) res.status(401).json({ authorised: false })
       else {
         const authorID: string = decoded.id
         const result = await BlogModel.find(

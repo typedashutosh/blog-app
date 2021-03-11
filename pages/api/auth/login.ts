@@ -7,8 +7,7 @@ import { CallbackError } from 'mongoose'
 import dbConnect from '../../../utils/dbConnect'
 
 const maxAge: number = 24 * 60 * 60
-export const createToken = (id: string): string =>
-  jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: maxAge })
+export const createToken = (id: string): string => jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: maxAge })
 
 export default (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') {
@@ -22,7 +21,7 @@ export default (req: NextApiRequest, res: NextApiResponse) => {
           if (same) {
             res.status(201).setHeader(
               'Set-Cookie',
-              serialize('token', createToken(user._id), {
+              serialize('auth', createToken(user._id), {
                 httpOnly: true,
                 sameSite: 'lax',
                 maxAge,
@@ -33,15 +32,9 @@ export default (req: NextApiRequest, res: NextApiResponse) => {
               authorised: true,
               username: `${user.firstname} ${user.lastname}`
             })
-          } else
-            res
-              .status(403)
-              .json({ authorised: false, message: 'Password mismatched' })
+          } else res.status(403).json({ authorised: false, message: 'Password mismatched' })
         })
-      } else
-        res
-          .status(404)
-          .json({ authorised: false, message: 'Username not found' })
+      } else res.status(404).json({ authorised: false, message: 'Username not found' })
     })
   } else res.status(501).end()
 }

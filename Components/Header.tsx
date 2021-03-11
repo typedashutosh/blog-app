@@ -1,16 +1,17 @@
 import Link from 'next/link'
 import Router from 'next/router'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { newBlogAction } from '../actions/blog.action'
 import { userLoginAction } from '../actions/user.action'
 import { store } from '../store'
 
 const Header = () => {
+  const dispatch = useDispatch()
+
   //* Local States
   const [search, setSearch] = useState<string>('')
   const { userInfoState } = store.getState()
-  const dispatch = useDispatch()
 
   //* Handlers
   const logoutHandler = () => {
@@ -75,11 +76,6 @@ const Header = () => {
               Login
             </span>
           </Link>
-          <Link href='/profile'>
-            <span className='text-lg py-1 px-2 cursor-pointer border-white border-b-2 transition-all duration-200 hover:border-black font-light'>
-              Profile
-            </span>
-          </Link>
           <Link href='/signup'>
             <span className='text-lg py-1 px-2 cursor-pointer border-white border-b-2 transition-all duration-200 hover:border-black font-light'>
               Signup
@@ -87,6 +83,12 @@ const Header = () => {
           </Link>
         </>
       )}
+      <Link href='/profile'>
+        <span className='text-lg py-1 px-2 cursor-pointer border-white border-b-2 transition-all duration-200 hover:border-black font-light'>
+          Profile
+        </span>
+      </Link>{' '}
+      {/* //--- to be reistated */}
     </header>
   )
 }

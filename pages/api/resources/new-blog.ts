@@ -11,7 +11,7 @@ export default (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') {
     //--- Extracting token
 
-    const cookie = req.headers.cookie?.split(';').find((cookie) => cookie.trim().startsWith('token='))
+    const cookie = req.headers.cookie?.split(';').find((cookie) => cookie.trim().startsWith('auth='))
     const token = cookie?.split('=')[1]
 
     if (!token) res.status(404).json({ _event: 'NO TOKEN FOUND' })

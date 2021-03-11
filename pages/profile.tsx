@@ -2,16 +2,36 @@ import BlogElement, { blogElementParamsType } from '../Components/BlogElement'
 import Meta from '../Components/Meta'
 import { FC } from 'react'
 import useSWR from 'swr'
+import { store } from '../store'
+import Router from 'next/router'
 
 const my_blogs: FC = () => {
+  const { userInfoState } = store.getState()
   const { data, error } = useSWR('api/resources/fetch-blogs')
-  console.log(data, error)
+  const blogs: blogElementParamsType[] = data
 
-  const blogs: any[] = []
+  //--- Setting Authenticated state
+
+  const isServer = () => typeof window === 'undefined'
+  if (!isServer()) {
+    if (!userInfoState.authorised) {
+      Router.push('/login?referer=profile', '/login')
+    }
+  }
+
+  if (blogs && typeof userInfoState.username === 'string') {
+    blogs.map((blog) => (blog.author = userInfoState.username ? userInfoState.username : ''))
+  }
+
   return (
     <div className=''>
-      <Meta title='All Blogs' />
-      {blogs && blogs.map((blog) => <BlogElement key={blog._id} {...blog} />)}
+      {!userInfoState.authorised ? null : (
+        <>
+          <Meta title={`${userInfoState.username !== undefined ? userInfoState.username + ' | ' : ''}Profile`} />
+          {blogs && blogs.map((blog) => <BlogElement key={blog._id} {...blog} />)}
+          {!blogs && <div> No blogs so far...</div>}
+        </>
+      )}
     </div>
   )
 }
