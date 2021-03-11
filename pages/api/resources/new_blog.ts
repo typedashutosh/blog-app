@@ -33,59 +33,38 @@ export default (req: NextApiRequest, res: NextApiResponse) => {
             else {
               //--- Since user exists, Let's create a Blog :}
               const user: IUser = doc
-              // console.log(user) //--- User Recheck gone correct, CONTINUE
-              const newBlog: IBlog = new BlogModel({
-                title: ' ',
-                description: ' ',
-                authorID: authorID,
-                author: `${user.firstname} ${user.lastname}`,
-                content: ' ',
-                mode: 'private',
-                state: 'draft',
-                votes: 0
-              })
-              newBlog.save().then((doc) => {
-                // console.log(doc) //--- Since we recieving the document correctly, we can send the response with the blog id, back to client
-
-                res.json({ blogID: newBlog._id, _event: 'CREATED' })
-              })
+              const { work, title, description, content, mode } = req.body
+              if (work === 'SAVE') {
+                const newBlog: IBlog = new BlogModel({
+                  title,
+                  description,
+                  authorID,
+                  author: `${user.firstname} ${user.lastname}`,
+                  content,
+                  mode,
+                  state: 'SAVED',
+                  votes: 0
+                })
+                newBlog.save().then((doc) => {
+                  res.json({ BlogID: newBlog._id, _event: 'SAVED' })
+                })
+              } else if (work === 'PUBLISH') {
+                const newBlog: IBlog = new BlogModel({
+                  title,
+                  description,
+                  authorID,
+                  author: `${user.firstname} ${user.lastname}`,
+                  content,
+                  mode,
+                  state: 'PUBLISHED',
+                  votes: 0
+                })
+                newBlog.save().then((doc) => {
+                  res.json({ BlogID: newBlog._id, _event: 'PUBLISHED' })
+                })
+              }
             }
           })
-        }
-      })
-    }
-  } //--- POST method ends here
-
-  if (req.method === 'PATCH') {
-    const { work, BlogID, title, description, content, mode } = req.body
-    if (work === 'UPDATE') {
-      BlogModel.findByIdAndUpdate(BlogID, { title, description, content, mode }, { new: true }, (err, doc: IBlog) => {
-        if (err) {
-          console.log(err)
-          res.status(400).json({ err })
-        } else if (doc._id.toString() === BlogID) res.status(200).json({ _event: 'UPDATED' })
-      }) //---Doc Updated
-    }
-    if (work === 'PUBLISH') {
-      BlogModel.findByIdAndUpdate(
-        BlogID,
-        { title, description, content, mode, state: 'PUBLISHED' },
-        { new: true },
-        (err, doc: IBlog) => {
-          if (err) {
-            console.log(err)
-            res.status(400).json({ err })
-          } else if (doc._id.toString() === BlogID) res.status(200).json({ _event: 'SAVED' })
-        }
-      ) //---Doc Saved and Published
-    }
-    if (work === 'DELETE') {
-      BlogModel.findByIdAndDelete(BlogID, undefined, (err, doc) => {
-        if (err) {
-          console.log(err)
-          res.status(400).json({ err })
-        } else {
-          res.status(200).json({ _event: 'DELETED' })
         }
       })
     }

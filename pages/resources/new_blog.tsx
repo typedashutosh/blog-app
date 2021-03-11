@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { store } from '../../store'
 import Meta from '../../Components/Meta'
 import Router from 'next/router'
@@ -6,12 +6,11 @@ import Router from 'next/router'
 const newBlog = () => {
   //--- Declare States
 
-  const { userInfoState, newBlogState } = store.getState()
+  const { userInfoState } = store.getState()
   const [title, setTitle] = useState<string>('')
   const [description, setDescription] = useState<string>('')
   const [content, setContent] = useState<string>('')
   const [mode, setMode] = useState<'PUBLIC' | 'PRIVATE'>('PRIVATE')
-  const [work, setWork] = useState<'UPDATE' | 'PUBLISH' | 'DELETE'>('UPDATE')
   const [buttondisable, setButtondisable] = useState<boolean>(false)
 
   //--- Setting Authenticated state
@@ -25,13 +24,12 @@ const newBlog = () => {
 
   //--- Handlers
 
-  const saveHandler = () => {
+  const blogHandler = (work: 'SAVE' | 'PUBLISH') => {
     fetch('/api/resources/new_blog', {
-      method: 'PATCH',
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         work,
-        BlogID: newBlogState.blogID,
         title,
         description,
         content,
@@ -40,17 +38,10 @@ const newBlog = () => {
     })
       .then((res) => res.json())
       .then((data) => {
-        if (data._event === 'SAVED') Router.push(`/resources/${newBlogState.blogID}`)
-        if (data._event === 'DELETED') Router.push(`/`)
+        if (data._event === 'PUBLISHED' || data._event === 'SAVED') Router.push(`/resources/${data.BlogID}`)
       })
       .catch((err) => console.log('new_blog.tsx saveHandler err: ', err))
   }
-
-  useEffect(() => {
-    saveHandler()
-  }, [work])
-
-  //  const deleteHandler = () => {}
 
   return (
     <>
@@ -94,8 +85,11 @@ const newBlog = () => {
           <input
             className='mt-2 py-2 px-4 rounded-tl-md rounded-bl-md bg-blue-500 hover:bg-blue-600 active:bg-blue-700 transition-all duration-200 cursor-pointer outline-none'
             type='button'
-            value='Draft'
-            onClick={saveHandler}
+            value='Save'
+            onClick={() => {
+              setButtondisable(true)
+              blogHandler('SAVE')
+            }}
             disabled={buttondisable}
           />
           <input
@@ -104,7 +98,7 @@ const newBlog = () => {
             value='Publish'
             onClick={() => {
               setButtondisable(true)
-              setWork('PUBLISH')
+              blogHandler('PUBLISH')
             }}
             disabled={buttondisable}
           />
@@ -114,7 +108,7 @@ const newBlog = () => {
             value='Delete'
             onClick={() => {
               setButtondisable(true)
-              setWork('DELETE')
+              Router.push('/profile')
             }}
             disabled={buttondisable}
           />

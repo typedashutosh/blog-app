@@ -7,7 +7,7 @@ export interface IBlog extends Document {
   author: string
   content: string
   mode: 'PUBLIC' | 'PRIVATE'
-  state: 'DRAFT' | 'PUBLISHED'
+  state: 'SAVED' | 'PUBLISHED'
   votes: number
 }
 

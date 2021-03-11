@@ -28,17 +28,7 @@ const Header = () => {
       .catch((err) => console.log(err))
   }
 
-  const newBlogHandler = () => {
-    fetch('/api/resources/new_blog', { method: 'POST' })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data._event === 'CREATED') {
-          dispatch(newBlogAction(data))
-          Router.push('/resources/new_blog')
-        } else console.log('err:::>', data)
-      })
-      .catch((err) => console.log('err:::>', err))
-  }
+  const newBlogHandler = () => (userInfoState.authorised ? Router.push('/resources/new_blog') : null)
 
   //?
   return (

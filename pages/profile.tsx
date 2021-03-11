@@ -1,11 +1,10 @@
 import BlogElement, { blogElementParamsType } from '../Components/BlogElement'
 import Meta from '../Components/Meta'
-import { FC } from 'react'
 import useSWR from 'swr'
 import { store } from '../store'
 import Router from 'next/router'
 
-const my_blogs: FC = () => {
+const profile = () => {
   const { userInfoState } = store.getState()
   const { data } = useSWR('api/resources/fetch_blogs')
   const blogs: blogElementParamsType[] = data
@@ -28,12 +27,13 @@ const my_blogs: FC = () => {
       <Meta title={`${userInfoState.username !== undefined ? userInfoState.username + ' | ' : ''}Profile`} />
       {!userInfoState.authorised ? null : (
         <>
-          {blogs && blogs.map((blog) => <BlogElement key={blog._id} {...blog} />)}
+          <div className='info'>{userInfoState.username !== undefined ? userInfoState.username : ''}</div>
           {!blogs && <div> No blogs so far...</div>}
+          {blogs && blogs.map((blog) => <BlogElement key={blog._id} {...blog} />)}
         </>
       )}
     </div>
   )
 }
 
-export default my_blogs
+export default profile
