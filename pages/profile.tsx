@@ -19,17 +19,29 @@ const profile = () => {
   }
 
   if (blogs && typeof userInfoState.username === 'string') {
-    blogs.map((blog) => (blog.author = userInfoState.username ? userInfoState.username : ''))
+    blogs.map(
+      (blog) =>
+        (blog.author = userInfoState.username ? userInfoState.username : '')
+    )
   }
 
   return (
     <div className='mx-10 my2'>
-      <Meta title={`${userInfoState.username !== undefined ? userInfoState.username + ' | ' : ''}Profile`} />
+      <Meta
+        title={`${
+          userInfoState.username !== undefined
+            ? userInfoState.username + ' | '
+            : ''
+        }Profile`}
+      />
       {!userInfoState.authorised ? null : (
         <>
-          <div className='info'>{userInfoState.username !== undefined ? userInfoState.username : ''}</div>
+          <div className='info'>
+            {userInfoState.username !== undefined ? userInfoState.username : ''}
+          </div>
           {!blogs && <div> No blogs so far...</div>}
-          {blogs && blogs.map((blog) => <BlogElement key={blog._id} {...blog} />)}
+          {blogs &&
+            blogs.map((blog) => <BlogElement key={blog._id} {...blog} />)}
         </>
       )}
     </div>

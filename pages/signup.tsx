@@ -24,7 +24,8 @@ const signup = () => {
       .then((data) => {
         setUsernameError('')
         dispatch(userLoginAction(data))
-        if (data.authorised) Router.push(Router.query.referer?.toString() || '/')
+        if (data.authorised)
+          Router.push(Router.query.referer?.toString() || '/')
         if (data.message === 'Firstname is required') {
           setFirstnameError(data.message)
         }
@@ -53,7 +54,9 @@ const signup = () => {
           value={firstname}
           required
         />
-        <span style={{ color: 'red', fontSize: '.75rem' }}>{firstnameError}</span>
+        <span style={{ color: 'red', fontSize: '.75rem' }}>
+          {firstnameError}
+        </span>
 
         <label className='my-2 mx-4 text-lg' htmlFor='lastname'>
           Lastname:
@@ -80,7 +83,9 @@ const signup = () => {
           value={username}
           required
         />
-        <span style={{ color: 'red', fontSize: '.75rem' }}>{usernameError}</span>
+        <span style={{ color: 'red', fontSize: '.75rem' }}>
+          {usernameError}
+        </span>
 
         <label className='my-2 mx-4 text-lg' htmlFor='password'>
           Password:

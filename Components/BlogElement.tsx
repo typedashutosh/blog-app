@@ -11,10 +11,19 @@ export type blogElementParamsType = {
   createdAt: string
 }
 
-const BlogElement: FC<blogElementParamsType> = ({ title, description, author, _id, votes, createdAt }) => {
+const BlogElement: FC<blogElementParamsType> = ({
+  title,
+  description,
+  author,
+  _id,
+  votes
+}) => {
   let a: IBlog
   return (
-    <div className='mx-8 p-2 mb-4 border-l-4 border-red-400 transition-all duration-200 hover:border-red-500' id={_id}>
+    <div
+      className='mx-8 p-2 mb-4 border-l-4 border-red-400 transition-all duration-200 hover:border-red-500'
+      id={_id}
+    >
       <Link href={`/resources/${_id}`}>
         <h1 className='text-4xl mb-2'>{title}</h1>
       </Link>

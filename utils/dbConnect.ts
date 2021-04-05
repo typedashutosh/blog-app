@@ -11,6 +11,7 @@ async function dbConnect() {
       useFindAndModify: false,
       useCreateIndex: true
     })
+    console.log(`Connected to Database`)
   }
 }
 

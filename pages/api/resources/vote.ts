@@ -1,4 +1,3 @@
-import { CallbackError } from 'mongoose'
 import { NextApiRequest, NextApiResponse } from 'next'
 import BlogModel, { IBlog } from '../../../models/Blog.model'
 
@@ -7,7 +6,7 @@ export default (req: NextApiRequest, res: NextApiResponse) => {
     const { work, id } = req.body
     switch (work) {
       case 'INCREMENT':
-        BlogModel.findById(id, (err: CallbackError, doc: IBlog) => {
+        BlogModel.findById(id, (err: any, doc: IBlog) => {
           if (err) {
             console.log(err)
             res.status(501).end()
@@ -18,7 +17,7 @@ export default (req: NextApiRequest, res: NextApiResponse) => {
         })
         break
       case 'DECREMENT':
-        BlogModel.findById(id, (err: CallbackError, doc: IBlog) => {
+        BlogModel.findById(id, (err: any, doc: IBlog) => {
           if (err) {
             console.log(err)
             res.status(501).end()

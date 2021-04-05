@@ -39,7 +39,10 @@ const index: FC<{ blogs: blogElementParamsType[] }> = ({ blogs }) => {
       <Meta title='BLOG | HOMEPAGE' />
       <Carousal />
       <div>
-        {blogs && blogs.map((blog: blogElementParamsType) => <BlogElement key={blog._id} {...blog} />)}
+        {blogs &&
+          blogs.map((blog: blogElementParamsType) => (
+            <BlogElement key={blog._id} {...blog} />
+          ))}
         <Link href='/resources'>
           <div className='mb-2 mx-auto py-2 px-4 text-white active:bg-gray-100 rounded-md bg-black transition-all duration-200 hover:bg-white hover:text-black cursor-pointer shadow-lg w-max'>
             View all blogs

@@ -23,7 +23,8 @@ const login = () => {
         setUsernameError('')
         setPasswordError('')
         dispatch(userLoginAction(data))
-        if (data.authorised) Router.push(Router.query.referer?.toString() || '/')
+        if (data.authorised)
+          Router.push(Router.query.referer?.toString() || '/')
         if (data.message === 'Username not found') {
           setUsernameError(data.message)
         }
@@ -53,7 +54,9 @@ const login = () => {
           value={username}
           required
         />
-        <span style={{ color: 'red', fontSize: '.75rem' }}>{usernameError}</span>
+        <span style={{ color: 'red', fontSize: '.75rem' }}>
+          {usernameError}
+        </span>
 
         <label htmlFor='password' className='my-2 mx-4 text-lg'>
           Password:
@@ -68,7 +71,9 @@ const login = () => {
           value={password}
           required
         />
-        <span style={{ color: 'red', fontSize: '.75rem' }}>{passwordError}</span>
+        <span style={{ color: 'red', fontSize: '.75rem' }}>
+          {passwordError}
+        </span>
 
         <button
           className='px-4 py-2 m-auto w-max bg-black shadow-sm hover:shadow-md hover:bg-white text-white hover:text-black transition-all duration-200 rounded-md cursor-pointer outline-none'

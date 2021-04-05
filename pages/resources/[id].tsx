@@ -52,15 +52,22 @@ const BlogPage = ({ blog }: { blog: IBlog }) => {
   return (
     <div className=''>
       <Meta title={blog.title} />
-      <div onClick={() => Router.back()} className='ml-8 flex px-2 py-1 cursor-pointer w-max items-center'>
+      <div
+        onClick={() => Router.back()}
+        className='ml-8 flex px-2 py-1 cursor-pointer w-max items-center'
+      >
         <div className='go-back-btn border-l-2 border-b-2 border-black h-4 w-4 transform rotate-45'></div>
         <div className='go-back-text text-lg px-2 border-b-2 border-white hover:border-black transition-all duration-200'>
           Go Back
         </div>
       </div>
       <h1 className='mx-10 mt-5 text-4xl mb-2'>{blog.title}</h1>
-      <span className='mx-10 p-2 pl-0 text-gray-600'>Author : {blog.author}</span>
-      <div className='description mx-10 my-2 text-gray-800'>{blog.description}</div>
+      <span className='mx-10 p-2 pl-0 text-gray-600'>
+        Author : {blog.author}
+      </span>
+      <div className='description mx-10 my-2 text-gray-800'>
+        {blog.description}
+      </div>
       <p className='mx-10 mt-2 text-justify'>{blog.content}</p>
       <div className='mx-10 mt-2 mb-4'>
         <input

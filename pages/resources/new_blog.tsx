@@ -38,7 +38,8 @@ const newBlog = () => {
     })
       .then((res) => res.json())
       .then((data) => {
-        if (data._event === 'PUBLISHED' || data._event === 'SAVED') Router.push(`/resources/${data.BlogID}`)
+        if (data._event === 'PUBLISHED' || data._event === 'SAVED')
+          Router.push(`/resources/${data.BlogID}`)
       })
       .catch((err) => console.log('new_blog.tsx saveHandler err: ', err))
   }
@@ -78,7 +79,9 @@ const newBlog = () => {
             type='checkbox'
             name='post-as'
             id='post-as'
-            onChange={(e) => (e.target.checked ? setMode('PUBLIC') : setMode('PRIVATE'))}
+            onChange={(e) =>
+              e.target.checked ? setMode('PUBLIC') : setMode('PRIVATE')
+            }
           />
           <label htmlFor='post-as'>Post as PUBLIC</label>
           <br />

@@ -1,4 +1,6 @@
-import BlogElement, { blogElementParamsType } from '../../Components/BlogElement'
+import BlogElement, {
+  blogElementParamsType
+} from '../../Components/BlogElement'
 import BlogModel from '../../models/Blog.model'
 import Meta from '../../Components/Meta'
 import { FC } from 'react'
