@@ -53,7 +53,7 @@ const Header: FC<IHeader> = ({ session }): ReactElement => {
           }}
           startIcon={<AccountIcon style={{ color: 'white' }} />}
         >
-          {!!session && String(session.user?.firstname)}
+          {!!session && session?.user?.firstname}
           {!session && 'Account'}
         </Button>
         <Menu
@@ -92,15 +92,7 @@ const Header: FC<IHeader> = ({ session }): ReactElement => {
             </div>
           )}
         </Menu>
-        {!!session && (
-          <Link href='/cart'>
-            <IconButton>
-              <Badge badgeContent={5} color='secondary'>
-                <CartIcon style={{ color: 'white' }} />
-              </Badge>
-            </IconButton>
-          </Link>
-        )}
+        {/* {!!session && true} */}
       </Toolbar>
     </AppBar>
   )

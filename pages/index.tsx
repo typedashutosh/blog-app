@@ -1,22 +1,16 @@
-import 'swiper/swiper.min.css'
-import 'swiper/components/navigation/navigation.min.css'
-import 'swiper/components/pagination/pagination.min.css'
-import 'swiper/components/scrollbar/scrollbar.min.css'
-
 import { createClient } from 'contentful'
 import { GetStaticProps } from 'next'
-import Link from 'next/link'
-import { FC } from 'react'
+import { FC, ReactElement } from 'react'
 
-import Carousal from '../Components/Carousal'
-import Meta from '../Components/Meta'
-import dbconnect from '../utils/dbConnect'
-import BlogElement, { IBlogElement } from '../Components/BlogElement'
+import { Container, makeStyles } from '@material-ui/core'
 
-interface IIndex {
-  Blogs: IBlogElement['blog'][]
+import BlogCard from '../Components/BlogCard'
+import { IBlogCard } from '../Components/BlogCard'
+import * as Carousel from '../Components/Carousel'
+
+interface Iindex {
+  Blogs: IBlogCard['blog'][]
 }
-
 export const getStaticProps: GetStaticProps = async () => {
   const client = createClient({
     space: process.env.CONTENTFUL_SPACE_ID,
@@ -26,13 +20,21 @@ export const getStaticProps: GetStaticProps = async () => {
   return { props: { Blogs: res.items } }
 }
 
-const index: FC<IIndex> = ({ Blogs }) => {
+const useStyles = makeStyles({
+  root: {
+    paddingTop: '1rem',
+    paddingBottom: '1rem'
+  },
+  main: {
+    margin: 'auto'
+  }
+})
+const index: FC<Iindex> = (): ReactElement => {
+  const classes = useStyles()
   return (
-    <div className=''>
-      <Meta title='BLOG | HOMEPAGE' />
-      <Carousal />
-      {!!Blogs && Blogs.map((b) => <BlogElement key={1233} blog={b} />)}
-    </div>
+    <Container>
+      <Carousel.Skeleton />
+    </Container>
   )
 }
 

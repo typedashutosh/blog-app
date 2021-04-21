@@ -25,8 +25,9 @@ const UserSchema = new Schema<IUser>(
 )
 
 UserSchema.pre<IUser>(`save`, function (this: IUser, next) {
+  const saltRounds = 10
   bcrypt
-    .genSalt()
+    .genSalt(saltRounds)
     .then((salt) => {
       bcrypt.hash(this.password, salt).then((hash) => {
         this.password = hash

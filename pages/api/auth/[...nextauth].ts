@@ -4,6 +4,7 @@ import { JWT } from 'next-auth/jwt'
 import Providers from 'next-auth/providers'
 import UserModel from '../../../models/User.model'
 import dbConnect from '../../../utils/dbConnect'
+import bcrypt from 'bcrypt'
 
 export default (req: NextApiRequest, res: NextApiResponse) => {
   return new Promise((resolve) =>
@@ -30,14 +31,12 @@ export default (req: NextApiRequest, res: NextApiResponse) => {
           }: Record<string, string>): Promise<User | null> => {
             if (!csrfToken) return null
             dbConnect()
-            const user: User = await UserModel.findOne(
-              {
-                username,
-                password
-              },
-              ['_id', 'firstname', 'lastname', 'username']
+
+            const user: { password: string } & User = await UserModel.findOne(
+              { username },
+              ['id', 'firstname', 'lastname', 'username', 'password']
             )
-            return !!user._id ? user : null
+            return (await bcrypt.compare(password, user.password)) ? user : null
           }
         })
       ],
@@ -68,7 +67,18 @@ export default (req: NextApiRequest, res: NextApiResponse) => {
           session: Session,
           userOrToken: User | JWT
         ): Promise<Session> => {
-          return session
+          console.log({ userOrToken })
+          const returnSession = {
+            expires: session.expires,
+            user: {
+              _id: userOrToken._id,
+              firstname: userOrToken.firstname,
+              lastname: userOrToken.lastname,
+              username: userOrToken.username
+            },
+            accessToken: session.accessToken
+          }
+          return returnSession
         },
         jwt: async (
           token: JWT,
@@ -77,15 +87,14 @@ export default (req: NextApiRequest, res: NextApiResponse) => {
           profile: Profile,
           isNewUser: boolean
         ): Promise<JWT> => {
-          return (
-            user &&
+          user &&
             (token = {
               _id: user._id,
               firstname: user.firstname,
               lastname: user.lastname,
               username: user.username
             })
-          )
+          return token
         }
       }
     })
