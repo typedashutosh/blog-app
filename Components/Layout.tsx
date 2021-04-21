@@ -24,7 +24,7 @@ const Layout: FC<ILayout> = ({ children, auth }): ReactElement => {
     <Header session={session} />
   )
   useEffect(() => {
-    getSession().then((session) => {
+    getSession({}).then((session) => {
       setHeaderElement(<Header session={session} />)
     })
   }, [auth])
