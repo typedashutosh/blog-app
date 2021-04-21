@@ -1,5 +1,9 @@
 import { createClient } from 'contentful'
-import { GetStaticProps } from 'next'
+import {
+  GetServerSideProps,
+  GetServerSidePropsContext,
+  GetStaticProps
+} from 'next'
 import { FC, ReactElement } from 'react'
 
 import { Container, makeStyles } from '@material-ui/core'
@@ -7,11 +11,14 @@ import { Container, makeStyles } from '@material-ui/core'
 import BlogCard from '../Components/BlogCard'
 import { IBlogCard } from '../Components/BlogCard'
 import * as Carousel from '../Components/Carousel'
+import { ParsedUrlQuery } from 'node:querystring'
 
 interface Iindex {
   Blogs: IBlogCard['blog'][]
 }
-export const getStaticProps: GetStaticProps = async () => {
+export const getServerSideProps: GetServerSideProps = async (
+  context: GetServerSidePropsContext<ParsedUrlQuery>
+) => {
   const client = createClient({
     space: process.env.CONTENTFUL_SPACE_ID,
     accessToken: process.env.CONTENTFUL_ACCESS_KEY
@@ -21,20 +28,20 @@ export const getStaticProps: GetStaticProps = async () => {
 }
 
 const useStyles = makeStyles({
-  root: {
-    paddingTop: '1rem',
-    paddingBottom: '1rem'
-  },
-  main: {
-    margin: 'auto'
-  }
+  root: {},
+  main: {}
 })
-const index: FC<Iindex> = (): ReactElement => {
+const index: FC<Iindex> = ({ Blogs }): ReactElement => {
   const classes = useStyles()
   return (
-    <Container>
+    <>
       <Carousel.Skeleton />
-    </Container>
+      <Container>
+        {Blogs.map((blog) => (
+          <BlogCard key={blog.sys.id} blog={blog} />
+        ))}
+      </Container>
+    </>
   )
 }
 

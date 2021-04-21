@@ -67,7 +67,6 @@ export default (req: NextApiRequest, res: NextApiResponse) => {
           session: Session,
           userOrToken: User | JWT
         ): Promise<Session> => {
-          console.log({ userOrToken })
           const returnSession = {
             expires: session.expires,
             user: {
