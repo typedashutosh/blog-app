@@ -1,16 +1,19 @@
-import { Swiper, SwiperSlide } from "swiper/react";
-import SwiperCore, { Navigation, Pagination, Autoplay } from "swiper";
-import Image from "next/image";
-
+import { Swiper, SwiperSlide } from 'swiper/react'
+import SwiperCore, { Navigation, Pagination, Autoplay } from 'swiper'
+import Image from 'next/image'
+import 'swiper/swiper.min.css'
+import 'swiper/components/navigation/navigation.min.css'
+import 'swiper/components/pagination/pagination.min.css'
+import 'swiper/components/scrollbar/scrollbar.min.css'
 const Carousal = () => {
-  SwiperCore.use([Navigation, Pagination, Autoplay]);
+  SwiperCore.use([Navigation, Pagination, Autoplay])
   return (
     <Swiper
-      className="mb-4"
+      className='mb-4'
       loop={true}
       autoplay={{
         delay: 5000,
-        disableOnInteraction: false,
+        disableOnInteraction: false
       }}
       spaceBetween={50}
       slidesPerView={1}
@@ -18,32 +21,32 @@ const Carousal = () => {
       pagination={{
         clickable: true,
         dynamicBullets: true,
-        dynamicMainBullets: 3,
+        dynamicMainBullets: 3
       }}
     >
       <SwiperSlide>
         <Image
-          src={"https://source.unsplash.com/1503x600"}
+          src={'https://source.unsplash.com/1503x600'}
           width={1500}
           height={600}
         />
       </SwiperSlide>
       <SwiperSlide>
         <Image
-          src={"https://source.unsplash.com/1500x600"}
+          src={'https://source.unsplash.com/1500x600'}
           width={1500}
           height={600}
         />
       </SwiperSlide>
       <SwiperSlide>
         <Image
-          src={"https://source.unsplash.com/1501x600"}
+          src={'https://source.unsplash.com/1501x600'}
           width={1500}
           height={600}
         />
       </SwiperSlide>
     </Swiper>
-  );
-};
+  )
+}
 
-export default Carousal;
+export default Carousal

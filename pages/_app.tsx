@@ -1,14 +1,15 @@
 import { AppProps } from 'next/app'
-import '../Styles/tailwind.css'
-import Header from '../Components/Header'
-import { Provider } from 'react-redux'
-import { store } from '../store'
+import { Provider } from 'next-auth/client'
+import Layout from '../Components/Layout'
+import { CssBaseline } from '@material-ui/core'
 
-const _app = ({ Component, pageProps }: AppProps) => {
+const _app = ({ Component, pageProps, router }: AppProps) => {
   return (
-    <Provider store={store}>
-      <Header />
-      <Component {...pageProps} />
+    <Provider session={pageProps.session}>
+      <Layout auth={true}>
+        <CssBaseline />
+        <Component {...pageProps} />
+      </Layout>
     </Provider>
   )
 }

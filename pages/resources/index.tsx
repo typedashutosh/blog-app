@@ -1,35 +1,22 @@
-import BlogElement, {
-  blogElementParamsType
-} from '../../Components/BlogElement'
-import BlogModel from '../../models/Blog.model'
 import Meta from '../../Components/Meta'
+import { createClient } from 'contentful'
 import { FC } from 'react'
 
 export const getStaticProps = async () => {
-  const result = await BlogModel.find(
-    { mode: 'PUBLIC', state: 'PUBLISHED' },
-    ['title', 'description', '_id', 'author', 'votes', 'createdAt'],
-    {
-      skip: 0,
-      limit: 10,
-      sort: { votes: -1 }
-    }
-  )
-  const blogs: blogElementParamsType[] = result.map((doc) => {
-    const blog = doc.toObject()
-    blog._id = blog._id.toString()
-    blog.createdAt = blog.createdAt.toString()
-    return blog
+  const client = createClient({
+    space: process.env.CONTENTFUL_SPACE_ID,
+    accessToken: process.env.CONTENTFUL_ACCESS_KEY
   })
-
-  return { props: { blogs } }
+  const res = await client.getEntries({ content_type: 'Blog' })
+  return { props: { Blogs: res.items } }
 }
 
-const allBlogs: FC<{ blogs: blogElementParamsType[] }> = ({ blogs }) => {
+const allBlogs: FC = (props) => {
+  console.log(props)
   return (
-    <div className=''>
+    <div>
       <Meta title='All Blogs' />
-      {blogs && blogs.map((blog) => <BlogElement key={blog._id} {...blog} />)}
+      this is home page
     </div>
   )
 }

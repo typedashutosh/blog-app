@@ -1,4 +1,4 @@
-import BlogElement, { blogElementParamsType } from '../Components/BlogElement'
+import BlogElement, { IBlogElement } from '../Components/BlogElement'
 import Meta from '../Components/Meta'
 import useSWR from 'swr'
 import { store } from '../store'
@@ -7,7 +7,7 @@ import Router from 'next/router'
 const profile = () => {
   const { userInfoState } = store.getState()
   const { data } = useSWR('api/resources/fetch_blogs')
-  const blogs: blogElementParamsType[] = data
+  const blogs: IBlogElement[] = data
 
   //--- Setting Authenticated state
 

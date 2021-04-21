@@ -1,41 +1,53 @@
-import { IBlog } from '../models/Blog.model'
 import Link from 'next/link'
 import { FC } from 'react'
+import { documentToReactComponents } from '@contentful/rich-text-react-renderer'
+import { Card, CardContent, CardMedia, Typography } from '@material-ui/core'
 
-export type blogElementParamsType = {
-  title: string
-  author: string
-  description: string
-  _id: string
-  votes: number
-  createdAt: string
+export interface IBlogElement {
+  blog: {
+    fields: {
+      title: string
+      description: string
+      headerImage: {
+        fields: {
+          description: string
+          file: {
+            details: {
+              image: {
+                height: number
+                width: number
+              }
+            }
+            fileName: string
+            url: string
+          }
+        }
+      }
+    }
+    metadata: {
+      tags: []
+    }
+    sys: {
+      id: string
+      createdAt: string
+    }
+  }
 }
 
-const BlogElement: FC<blogElementParamsType> = ({
-  title,
-  description,
-  author,
-  _id,
-  votes
-}) => {
-  let a: IBlog
+const BlogElement: FC<IBlogElement> = ({ blog }) => {
   return (
-    <div
-      className='mx-8 p-2 mb-4 border-l-4 border-red-400 transition-all duration-200 hover:border-red-500'
-      id={_id}
-    >
-      <Link href={`/resources/${_id}`}>
-        <h1 className='text-4xl mb-2'>{title}</h1>
-      </Link>
-      <span className='p-2 pl-0 text-gray-600'>Author : {author}</span>
-      <span className='ml-2 p-2 text-gray-600'>Votes: {votes}</span>
-      <p className='text-justify my-2'>{description}</p>
-      <Link href={`/resources/${_id}`}>
-        <div className='py-2 px-4 rounded-md bg-white active:bg-gray-700 transition-all duration-200 hover:bg-black hover:text-white cursor-pointer shadow-md w-max'>
-          Read full blog
-        </div>
-      </Link>
-    </div>
+    <Card>
+      <CardMedia
+        image={blog.fields.headerImage.fields.file.url}
+        title={blog.fields.headerImage.fields.description}
+      />
+      <div>
+        <CardContent>
+          <Typography component='h5'>{blog.fields.title}</Typography>
+          <Typography component='body'>{blog.fields.description}</Typography>
+        </CardContent>
+      </div>
+    </Card>
   )
 }
 

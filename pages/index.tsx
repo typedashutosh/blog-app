@@ -1,54 +1,37 @@
-import dbconnect from '../utils/dbConnect'
-import BlogModel from '../models/Blog.model'
-import BlogElement, { blogElementParamsType } from '../Components/BlogElement'
-import Carousal from '../Components/Carousal'
-import Link from 'next/link'
-import { GetStaticProps } from 'next'
-import Meta from '../Components/Meta'
 import 'swiper/swiper.min.css'
 import 'swiper/components/navigation/navigation.min.css'
 import 'swiper/components/pagination/pagination.min.css'
 import 'swiper/components/scrollbar/scrollbar.min.css'
+
+import { createClient } from 'contentful'
+import { GetStaticProps } from 'next'
+import Link from 'next/link'
 import { FC } from 'react'
 
-export const getStaticProps: GetStaticProps = async () => {
-  await dbconnect()
+import Carousal from '../Components/Carousal'
+import Meta from '../Components/Meta'
+import dbconnect from '../utils/dbConnect'
+import BlogElement, { IBlogElement } from '../Components/BlogElement'
 
-  const result = await BlogModel.find(
-    { mode: 'PUBLIC', state: 'PUBLISHED' },
-    ['title', 'description', '_id', 'author', 'votes', 'createdAt'],
-    {
-      skip: 0,
-      limit: 10,
-      sort: { votes: -1 }
-    }
-  )
-  const blogs: blogElementParamsType[] = result.map((doc) => {
-    const blog = doc.toObject()
-    blog._id = blog._id.toString()
-    blog.createdAt = blog.createdAt.toString()
-    return blog
-  })
-
-  return { props: { blogs } }
+interface IIndex {
+  Blogs: IBlogElement['blog'][]
 }
 
-const index: FC<{ blogs: blogElementParamsType[] }> = ({ blogs }) => {
+export const getStaticProps: GetStaticProps = async () => {
+  const client = createClient({
+    space: process.env.CONTENTFUL_SPACE_ID,
+    accessToken: process.env.CONTENTFUL_ACCESS_KEY
+  })
+  const res = await client.getEntries({ content_type: 'blog' })
+  return { props: { Blogs: res.items } }
+}
+
+const index: FC<IIndex> = ({ Blogs }) => {
   return (
     <div className=''>
       <Meta title='BLOG | HOMEPAGE' />
       <Carousal />
-      <div>
-        {blogs &&
-          blogs.map((blog: blogElementParamsType) => (
-            <BlogElement key={blog._id} {...blog} />
-          ))}
-        <Link href='/resources'>
-          <div className='mb-2 mx-auto py-2 px-4 text-white active:bg-gray-100 rounded-md bg-black transition-all duration-200 hover:bg-white hover:text-black cursor-pointer shadow-lg w-max'>
-            View all blogs
-          </div>
-        </Link>
-      </div>
+      {!!Blogs && Blogs.map((b) => <BlogElement key={1233} blog={b} />)}
     </div>
   )
 }
