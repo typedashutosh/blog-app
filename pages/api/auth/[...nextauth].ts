@@ -32,11 +32,18 @@ export default (req: NextApiRequest, res: NextApiResponse) => {
             if (!csrfToken) return null
             dbConnect()
 
-            const user: { password: string } & User = await UserModel.findOne(
-              { username },
-              ['id', 'firstname', 'lastname', 'username', 'password']
-            )
-            return (await bcrypt.compare(password, user.password)) ? user : null
+            const user: User = await UserModel.findOne({ username }, [
+              'id',
+              'firstname',
+              'lastname',
+              'username',
+              'password'
+            ])
+            if (await bcrypt.compare(password, String(user.password))) {
+              delete user.password
+              return user
+            }
+            return null
           }
         })
       ],
@@ -95,6 +102,11 @@ export default (req: NextApiRequest, res: NextApiResponse) => {
             })
           return token
         }
+      },
+      pages: {
+        signIn: '/signin',
+        error: '/error',
+        signOut: '/'
       }
     })
   )

@@ -8,6 +8,7 @@ import {
   Button,
   CircularProgress,
   Container,
+  Grid,
   makeStyles,
   TextField,
   Typography
@@ -65,9 +66,14 @@ const SignIn: FC<ISignIn> = ({ csrfToken, session }): JSX.Element => {
   return (
     <>
       {session && (
-        <Container>
+        <Grid
+          container
+          alignItems='center'
+          justify='center'
+          style={{ minHeight: '100vh' }}
+        >
           <CircularProgress className={classes.loading} />
-        </Container>
+        </Grid>
       )}
       {!session && (
         <Container>
