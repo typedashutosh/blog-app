@@ -1,55 +1,44 @@
-import dbconnect from '../utils/dbConnect'
-import BlogModel from '../models/Blog.model'
-import BlogElement, { blogElementParamsType } from '../Components/BlogElement'
-import Carousal from '../Components/Carousal'
-import Link from 'next/link'
-import { GetStaticProps } from 'next'
-import Meta from '../Components/Meta'
-import 'swiper/swiper.min.css'
-import 'swiper/components/navigation/navigation.min.css'
-import 'swiper/components/pagination/pagination.min.css'
-import 'swiper/components/scrollbar/scrollbar.min.css'
-import { FC } from 'react'
+import { createClient } from 'contentful'
+import {
+  GetServerSideProps,
+  GetServerSidePropsContext,
+  GetStaticProps
+} from 'next'
+import { FC, ReactElement } from 'react'
 
-export const getStaticProps: GetStaticProps = async () => {
-  await dbconnect()
+import { Container, makeStyles } from '@material-ui/core'
 
-  const result = await BlogModel.find(
-    { mode: 'PUBLIC', state: 'PUBLISHED' },
-    ['title', 'description', '_id', 'author', 'votes', 'createdAt'],
-    {
-      skip: 0,
-      limit: 10,
-      sort: { votes: -1 }
-    }
-  )
-  const blogs: blogElementParamsType[] = result.map((doc) => {
-    const blog = doc.toObject()
-    blog._id = blog._id.toString()
-    blog.createdAt = blog.createdAt.toString()
-    return blog
+import BlogCard from '../Components/BlogCard'
+import { IBlogCard } from '../Components/BlogCard'
+import Carousel from '../Components/Carousel'
+import { ParsedUrlQuery } from 'node:querystring'
+
+interface Iindex {
+  Blogs: IBlogCard['blog'][]
+}
+export const getServerSideProps: GetServerSideProps = async (
+  context: GetServerSidePropsContext<ParsedUrlQuery>
+) => {
+  const client = createClient({
+    space: process.env.CONTENTFUL_SPACE_ID,
+    accessToken: process.env.CONTENTFUL_ACCESS_KEY
   })
-
-  return { props: { blogs } }
+  const res = await client.getEntries({ content_type: 'blog' })
+  return { props: { Blogs: res.items } }
 }
 
-const index: FC<{ blogs: blogElementParamsType[] }> = ({ blogs }) => {
+const useStyles = makeStyles({})
+const index: FC<Iindex> = ({ Blogs }): ReactElement => {
+  const classes = useStyles()
   return (
-    <div className=''>
-      <Meta title='BLOG | HOMEPAGE' />
-      <Carousal />
-      <div>
-        {blogs &&
-          blogs.map((blog: blogElementParamsType) => (
-            <BlogElement key={blog._id} {...blog} />
-          ))}
-        <Link href='/resources'>
-          <div className='mb-2 mx-auto py-2 px-4 text-white active:bg-gray-100 rounded-md bg-black transition-all duration-200 hover:bg-white hover:text-black cursor-pointer shadow-lg w-max'>
-            View all blogs
-          </div>
-        </Link>
-      </div>
-    </div>
+    <>
+      <Carousel />
+      <Container>
+        {Blogs.map((blog) => (
+          <BlogCard key={blog.sys.id} blog={blog} />
+        ))}
+      </Container>
+    </>
   )
 }
 

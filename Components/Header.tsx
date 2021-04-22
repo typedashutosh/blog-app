@@ -1,84 +1,100 @@
+import { Session } from 'next-auth'
+import { signout } from 'next-auth/client'
 import Link from 'next/link'
-import Router from 'next/router'
-import { useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { userLoginAction } from '../actions/user.action'
-import { store } from '../store'
+import { FC, ReactElement, useState } from 'react'
 
-const Header = () => {
-  const dispatch = useDispatch()
+import {
+  AppBar,
+  Badge,
+  Button,
+  IconButton,
+  makeStyles,
+  Menu,
+  MenuItem,
+  Toolbar,
+  Typography
+} from '@material-ui/core'
+import {
+  AccountCircleOutlined as AccountIcon,
+  Menu as MenuIcon,
+  ShoppingCartOutlined as CartIcon
+} from '@material-ui/icons'
 
-  //* Local States
-  const [search, setSearch] = useState<string>('')
-  const { userInfoState } = store.getState()
+interface IHeader {
+  session: Session | null | undefined
+}
 
-  //* Handlers
-  const logoutHandler = () => {
-    fetch('/api/auth/logout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: ''
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        dispatch(userLoginAction(data))
-        Router.push('/')
-      })
-      .catch((err) => console.log(err))
+const useStyles = makeStyles({
+  title: {
+    marginRight: 'auto',
+    cursor: 'pointer'
   }
+})
 
-  const newBlogHandler = () =>
-    userInfoState.authorised ? Router.push('/resources/new_blog') : null
-
-  //?
+const Header: FC<IHeader> = ({ session }): ReactElement => {
+  const classes = useStyles()
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   return (
-    <header className='py-2 mb-2 mt-2 px-10 flex justify-between items-center'>
-      <span className=' logo font-medium text-3xl mr-4 cursor-pointer border-white border-b-2 transition-all duration-200 hover:border-black'>
-        <Link href='/'>BLOG</Link>
-      </span>
-      <div className='flex-1'>
-        <input
-          className=' shadow-md px-2 py-1  max-w-4xl rounded transition-all duration-200  hover:shadow-lg focus:outline-none focus:shadow-lg outline-none '
-          placeholder='Search everywhere...'
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <div className=''></div>
-      </div>
-      {userInfoState.authorised ? (
-        <>
-          <a
-            className='text-lg py-1 px-2 cursor-pointer border-white border-b-2 transition-all duration-200 hover:border-black font-light'
-            onClick={newBlogHandler}
-          >
-            New Blog
-          </a>
-          <Link href='/profile'>
-            <span className='text-lg py-1 px-2 cursor-pointer border-white border-b-2 transition-all duration-200 hover:border-black font-light'>
-              Profile
-            </span>
-          </Link>
-          <a
-            className=' text-lg py-1 px-2 cursor-pointer border-white border-b-2 transition-all duration-200 hover:border-black font-light'
-            onClick={logoutHandler}
-          >
-            Logout
-          </a>
-        </>
-      ) : (
-        <>
-          <Link href='/login'>
-            <span className='text-lg py-1 px-2 cursor-pointer border-white border-b-2 transition-all duration-200 hover:border-black font-light'>
-              Login
-            </span>
-          </Link>
-          <Link href='/signup'>
-            <span className='text-lg py-1 px-2 cursor-pointer border-white border-b-2 transition-all duration-200 hover:border-black font-light'>
-              Signup
-            </span>
-          </Link>
-        </>
-      )}
-    </header>
+    <AppBar position='sticky'>
+      <Toolbar>
+        <IconButton>
+          <MenuIcon style={{ color: 'white' }} />
+        </IconButton>
+        <Link href='/'>
+          <Typography className={classes.title}>E-Comm</Typography>
+        </Link>
+
+        <Button
+          aria-label='more'
+          aria-controls='long-menu'
+          aria-haspopup='true'
+          onClick={(e) => {
+            setAnchorEl(e.currentTarget)
+          }}
+          startIcon={<AccountIcon style={{ color: 'white' }} />}
+        >
+          {!!session && session?.user?.firstname}
+          {!session && 'Account'}
+        </Button>
+        <Menu
+          id='long-menu'
+          anchorEl={anchorEl}
+          keepMounted
+          open={Boolean(anchorEl)}
+          onClose={() => setAnchorEl(null)}
+          getContentAnchorEl={undefined}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+          transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        >
+          {!!session && (
+            <div>
+              <Link href='/settings'>
+                <MenuItem onClick={() => setAnchorEl(null)}>Settings</MenuItem>
+              </Link>
+              <MenuItem
+                onClick={() => {
+                  setAnchorEl(null)
+                  signout()
+                }}
+              >
+                Logout
+              </MenuItem>
+            </div>
+          )}
+          {!session && (
+            <div>
+              <Link href='/signin'>
+                <MenuItem onClick={() => setAnchorEl(null)}>Login</MenuItem>
+              </Link>
+              <Link href='/new_user'>
+                <MenuItem onClick={() => setAnchorEl(null)}>Register</MenuItem>
+              </Link>
+            </div>
+          )}
+        </Menu>
+        {/* {!!session && true} */}
+      </Toolbar>
+    </AppBar>
   )
 }
 

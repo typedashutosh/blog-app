@@ -3,6 +3,8 @@ declare global {
     interface ProcessEnv {
       JWT_SECRET: string
       MONGODB_URI: string
+      CONTENTFUL_SPACE_ID: string
+      CONTENTFUL_ACCESS_KEY: string
     }
   }
 }
