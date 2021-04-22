@@ -4,7 +4,7 @@ import { JWT } from 'next-auth/jwt'
 import Providers from 'next-auth/providers'
 import UserModel from '../../../models/User.model'
 import dbConnect from '../../../utils/dbConnect'
-import bcrypt from 'bcrypt'
+import bcrypt from 'bcryptjs'
 
 export default (req: NextApiRequest, res: NextApiResponse) => {
   return new Promise((resolve) =>
