@@ -61,6 +61,7 @@ const SignIn: FC<ISignIn> = ({ csrfToken }): JSX.Element => {
     })
       .then((res) => {
         if (res.url.includes('?error=')) {
+          console.log(res) //- there is somekind of error on preview
           setLoginError('Bad credentials')
           setAuthState(false)
         } else {
