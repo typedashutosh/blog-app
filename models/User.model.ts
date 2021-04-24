@@ -12,7 +12,7 @@ export interface IUser extends Document {
 const UserSchema = new Schema<IUser>(
   {
     firstname: { type: String, required: [true, 'Firstname is required'] },
-    lastname: String,
+    lastname: { type: String, required: false },
     username: {
       type: String,
       unique: true,
@@ -25,16 +25,15 @@ const UserSchema = new Schema<IUser>(
 )
 
 UserSchema.pre<IUser>(`save`, function (this: IUser, next) {
-  const saltRounds = 10
-  bcrypt
-    .genSalt(saltRounds)
-    .then((salt) => {
-      bcrypt.hash(this.password, salt).then((hash) => {
+  bcrypt.genSalt((err, salt) => {
+    bcrypt
+      .hash(this.password, salt)
+      .then((hash) => {
         this.password = hash
         next()
       })
-    })
-    .catch((err) => console.log(err))
+      .catch((err) => console.log(err))
+  })
 })
 
 export default models.User || model<IUser>('User', UserSchema)

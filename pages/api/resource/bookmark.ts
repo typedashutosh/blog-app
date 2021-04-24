@@ -14,9 +14,11 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       const _id = session?.user._id
 
       const user: IUser = await UserModel.findById(_id)
-      user.blogs.push(blogID)
-      user.save()
-      res.status(201).end()
+      if (user) {
+        user.blogs.push(blogID)
+        user.save()
+        res.status(201).end()
+      } else res.status(400).end()
     }
   })
 }

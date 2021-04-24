@@ -44,7 +44,13 @@ const useStyles = makeStyles({
 const SignIn: FC<ISignIn> = ({ csrfToken }): JSX.Element => {
   const { authState, setAuthState } = useContext(authContext) as IAuthContext
 
-  typeof window !== 'undefined' && authState && Router.push('/')
+  if (typeof window !== 'undefined') {
+    authState === 2 || authState === 0
+      ? null
+      : authState === 1
+      ? Router.push('/')
+      : console.log({ authState })
+  }
 
   const classes = useStyles()
   const [username, setUsername] = useState<string>('')
@@ -61,12 +67,12 @@ const SignIn: FC<ISignIn> = ({ csrfToken }): JSX.Element => {
     })
       .then((res) => {
         if (res.url.includes('?error=')) {
-          console.log(res) //- there is somekind of error on preview
+          // console.log(res) //- there is somekind of error on preview
           setLoginError('Bad credentials')
-          setAuthState(false)
+          setAuthState(0)
         } else {
           Router.push(res.url)
-          setAuthState(true)
+          setAuthState(1)
         }
       })
       .catch((err) => console.log({ err }))
@@ -74,7 +80,7 @@ const SignIn: FC<ISignIn> = ({ csrfToken }): JSX.Element => {
 
   return (
     <>
-      {authState && (
+      {!!authState && (
         <Grid
           container
           alignItems='center'

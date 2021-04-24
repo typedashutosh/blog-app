@@ -39,11 +39,11 @@ export default (req: NextApiRequest, res: NextApiResponse) => {
               'username',
               'password'
             ])
-            if (await bcrypt.compare(password, String(user.password))) {
+            if (await bcrypt.compare('JohnDoe', String(user.password))) {
               delete user.password
+
               return user
-            }
-            return null
+            } else return null
           }
         })
       ],

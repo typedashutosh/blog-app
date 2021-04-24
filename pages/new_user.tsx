@@ -37,7 +37,13 @@ const useStyles = makeStyles({
 const newUser: FC<InewUser> = ({ csrfToken }): JSX.Element => {
   const { authState, setAuthState } = useContext(authContext) as IAuthContext
 
-  typeof window !== 'undefined' && authState && Router.push('/')
+  if (typeof window !== 'undefined') {
+    authState === 2 || authState === 0
+      ? null
+      : authState === 1
+      ? Router.push('/')
+      : console.log({ authState })
+  }
 
   const classes = useStyles()
   const [firstname, setFirstname] = useState<string>('')
@@ -72,7 +78,16 @@ const newUser: FC<InewUser> = ({ csrfToken }): JSX.Element => {
               password: data.password
             })
           })
-            .then((res) => Router.push(`${res.url}?auth=true`, res.url))
+            .then((res) => {
+              if (res.url.includes('?error=')) {
+                //error handling
+                setAuthState(0)
+                console.log(res)
+              } else {
+                Router.push(res.url)
+                setAuthState(1)
+              }
+            })
             .catch((err) => console.log({ err }))
         } else {
           data.errors.forEach((err: any) => {
@@ -91,7 +106,7 @@ const newUser: FC<InewUser> = ({ csrfToken }): JSX.Element => {
 
   return (
     <>
-      {authState && (
+      {!!authState && (
         <Grid
           container
           alignItems='center'

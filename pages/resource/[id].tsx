@@ -15,9 +15,18 @@ import {
 import { IBlogCard } from '../../Components/BlogCard'
 import { authContext, loadingContext } from '../../provider/context'
 import { IAuthContext, ILoadingContext } from '../../provider'
+import dbConnect from '../../utils/dbConnect'
+import UserModel from '../../models/User.model'
+import {
+  BookmarkBorderOutlined,
+  CheckOutlined,
+  DoneOutlined
+} from '@material-ui/icons'
+import { getSession } from 'next-auth/client'
 
 interface IBlog {
   blog: IBlogCard['blog']
+  isBookmarked: boolean
 }
 
 const client = createClient({
@@ -51,8 +60,22 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
       }
     }
   }
+  //- Bookmarks search
+  dbConnect()
+  const session = await getSession({})
+
+  const data = (await UserModel.find({
+    _id: session?.user._id,
+    blogs: params?.id
+  })) as [{ blogs: string[] }]
+  const isBookmarked = Boolean(data.length)
+    ? data[0].blogs.includes(`${params?.id}`)
+      ? true
+      : false
+    : false
+
   return {
-    props: { blog: items[0] },
+    props: { blog: items[0], isBookmarked },
     revalidate: 1
   }
 }
@@ -64,14 +87,15 @@ const useStyles = makeStyles({
     zIndex: 100
   }
 })
-const blog: FC<IBlog> = ({ blog }) => {
+const blog: FC<IBlog> = ({ blog, isBookmarked: isBookmarkedServer }) => {
   const { setLoadingState } = useContext(loadingContext) as ILoadingContext
   const { authState } = useContext(authContext) as IAuthContext
   useEffect(() => {
     setLoadingState(false)
   }, [])
   const classes = useStyles()
-
+  const [isBookmarked, setIsBookmarked] = useState<boolean>(false)
+  useEffect(() => setIsBookmarked(isBookmarkedServer), [])
   const handleBookmark = () => {
     setLoadingState(true)
     //- fetch bookmark
@@ -80,8 +104,10 @@ const blog: FC<IBlog> = ({ blog }) => {
       body: JSON.stringify({ blogID: blog.sys.id })
     })
       .then((res) => {
-        if (res.status === 201) setLoadingState(false)
-        else {
+        if (res.status === 201) {
+          setLoadingState(false)
+          setIsBookmarked(true)
+        } else {
           setLoadingState(false)
           throw new Error('failed to save')
         }
@@ -116,15 +142,19 @@ const blog: FC<IBlog> = ({ blog }) => {
         <Typography component='span' variant='body1'>
           {documentToReactComponents(blog.fields.blogContent)}
         </Typography>
-        {authState && (
+        {!!authState && (
           <Toolbar>
             <Button
               variant='contained'
               color='primary'
               size='medium'
               onClick={() => handleBookmark()}
+              disabled={isBookmarked ? true : false}
+              startIcon={
+                isBookmarked ? <CheckOutlined /> : <BookmarkBorderOutlined />
+              }
             >
-              Bookmark
+              {isBookmarked ? 'Bookmarked' : 'Bookmark'}
             </Button>
           </Toolbar>
         )}

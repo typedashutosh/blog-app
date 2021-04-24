@@ -8,7 +8,6 @@ import {
   Badge,
   Button,
   IconButton,
-  LinearProgress,
   makeStyles,
   Menu,
   MenuItem,
@@ -17,9 +16,10 @@ import {
 } from '@material-ui/core'
 import {
   AccountCircleOutlined as AccountIcon,
-  Menu as MenuIcon,
-  ShoppingCartOutlined as CartIcon
+  Menu as MenuIcon
 } from '@material-ui/icons'
+import { authContext } from '../provider/context'
+import { IAuthContext } from '../provider'
 
 interface IHeader {
   session: Session | null | undefined
@@ -35,7 +35,7 @@ const useStyles = makeStyles({
 const Header: FC<IHeader> = ({ session }): ReactElement => {
   const classes = useStyles()
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-
+  const { authState, setAuthState } = useContext(authContext) as IAuthContext
   return (
     <AppBar position='static'>
       <Toolbar>
@@ -43,7 +43,7 @@ const Header: FC<IHeader> = ({ session }): ReactElement => {
           <MenuIcon style={{ color: 'white' }} />
         </IconButton>
         <Link href='/'>
-          <Typography className={classes.title}>E-Comm</Typography>
+          <Typography className={classes.title}>E-Commerce</Typography>
         </Link>
 
         <Button
@@ -68,7 +68,7 @@ const Header: FC<IHeader> = ({ session }): ReactElement => {
           anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
           transformOrigin={{ vertical: 'top', horizontal: 'right' }}
         >
-          {!!session && (
+          {!!authState && (
             <div>
               <Link href='/settings'>
                 <MenuItem onClick={() => setAnchorEl(null)}>Settings</MenuItem>
@@ -76,6 +76,7 @@ const Header: FC<IHeader> = ({ session }): ReactElement => {
               <MenuItem
                 onClick={() => {
                   setAnchorEl(null)
+                  setAuthState(0)
                   signout()
                 }}
               >
@@ -83,7 +84,7 @@ const Header: FC<IHeader> = ({ session }): ReactElement => {
               </MenuItem>
             </div>
           )}
-          {!session && (
+          {!authState && (
             <div>
               <Link href='/signin'>
                 <MenuItem onClick={() => setAnchorEl(null)}>Login</MenuItem>
@@ -94,7 +95,6 @@ const Header: FC<IHeader> = ({ session }): ReactElement => {
             </div>
           )}
         </Menu>
-        {/* {!!session && true} */}
       </Toolbar>
     </AppBar>
   )
