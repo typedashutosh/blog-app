@@ -1,9 +1,11 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import UserModel from '../../../models/User.model'
+import csrf_validator from '../../../utils/csrf_validator'
 import dbConnect from '../../../utils/dbConnect'
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   return new Promise(() => {
+    if (!csrf_validator(req, res)) return
     dbConnect()
     const user = req.body
     UserModel.create(user)

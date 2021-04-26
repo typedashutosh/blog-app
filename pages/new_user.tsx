@@ -62,7 +62,7 @@ const newUser: FC<InewUser> = (): JSX.Element => {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            csrfToken, //todo set up token verification
+            csrfToken,
             firstname,
             lastname,
             username,
@@ -98,16 +98,17 @@ const newUser: FC<InewUser> = (): JSX.Element => {
                 .catch((err) => (setLoadingState(false), console.log({ err })))
             } else {
               setLoadingState(false)
-
-              data.errors.forEach((err: any) => {
-                if (!!err.path) {
-                  if (err.path === 'firstname') setFirstnameError(err.message)
-                  if (err.path === 'username') setUsernameError(err.message)
-                  if (err.path === 'password') setpasswordError(err.message)
-                } else {
+              if (data.errors) {
+                data.errors.forEach((err: any) => {
+                  if (!!err.path) {
+                    if (err.path === 'firstname') setFirstnameError(err.message)
+                    if (err.path === 'username') setUsernameError(err.message)
+                    if (err.path === 'password') setpasswordError(err.message)
+                  }
                   setUsernameError(err.message)
-                }
-              })
+                })
+              } else if (data.err.status) console.log(data.err.status)
+              else console.log(data)
             }
           })
       })

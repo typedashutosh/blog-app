@@ -4,7 +4,6 @@ import { JWT } from 'next-auth/jwt'
 import Providers from 'next-auth/providers'
 import UserModel from '../../../models/User.model'
 import dbConnect from '../../../utils/dbConnect'
-import bcrypt from 'bcryptjs'
 
 export default (req: NextApiRequest, res: NextApiResponse) => {
   return new Promise((resolve) =>
@@ -31,23 +30,10 @@ export default (req: NextApiRequest, res: NextApiResponse) => {
           }: Record<string, string>): Promise<User | null> => {
             dbConnect()
             return await UserModel.login(username, password)
-
-            // const user: User | null = await UserModel.findOne({ username }, [
-            //   'id',
-            //   'firstname',
-            //   'lastname',
-            //   'username',
-            //   'password'
-            // ])
-
-            // if (await bcrypt.compare('JohnDoe', String(user?.password))) {
-            //   delete user?.password
-
-            //   return user
-            // } else return null
           }
         })
       ],
+      secret: process.env.SECRET,
       session: {
         jwt: true,
         maxAge: 30 * 24 * 60 * 60,

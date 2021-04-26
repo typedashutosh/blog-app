@@ -1,6 +1,7 @@
 declare global {
   namespace NodeJS {
     interface ProcessEnv {
+      SECRET: string
       JWT_SECRET: string
       MONGODB_URI: string
       CONTENTFUL_SPACE_ID: string

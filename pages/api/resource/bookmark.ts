@@ -1,10 +1,12 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { getSession } from 'next-auth/client'
 import UserModel, { IUser } from '../../../models/User.model'
+import csrf_validator from '../../../utils/csrf_validator'
 import dbConnect from '../../../utils/dbConnect'
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   return new Promise(async () => {
+    if (!csrf_validator(req, res)) return
     if (req.method === 'POST') {
       const { work } = JSON.parse(req.body) as Record<string, string>
       if (work === 'Find Bookmarks') {

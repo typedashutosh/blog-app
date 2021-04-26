@@ -119,9 +119,6 @@ const blog: FC<IBlog> = ({ blog }) => {
       })
       // .then((data) => console.log(data))
       .catch((err) => console.log(err))
-    // setTimeout(() => {
-    //   setLoadingState(false)
-    // }, 2000)
   }
   if (!blog) {
     return <></>
