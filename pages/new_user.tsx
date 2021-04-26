@@ -1,7 +1,6 @@
-import { GetServerSideProps } from 'next'
-import { getCsrfToken, getSession } from 'next-auth/client'
+import { getCsrfToken } from 'next-auth/client'
 import Router from 'next/router'
-import { FC, FormEvent, useContext, useState } from 'react'
+import { FC, FormEvent, useContext, useEffect, useState } from 'react'
 
 import {
   Box,
@@ -14,8 +13,8 @@ import {
   Typography
 } from '@material-ui/core'
 
-import { IAuthContext } from '../provider'
-import { authContext } from '../provider/context'
+import { IAuthContext, ILoadingContext } from '../provider'
+import { authContext, loadingContext } from '../provider/context'
 
 interface InewUser {}
 
@@ -25,14 +24,19 @@ const useStyles = makeStyles({
 
 const newUser: FC<InewUser> = (): JSX.Element => {
   const { authState, setAuthState } = useContext(authContext) as IAuthContext
+  const { setLoadingState } = useContext(loadingContext) as ILoadingContext
 
-  if (typeof window !== 'undefined') {
-    authState === 2 || authState === 0
-      ? null
-      : authState === 1
-      ? Router.push('/')
-      : console.log({ authState })
-  }
+  useEffect(() => {
+    setLoadingState(false)
+
+    if (typeof window !== 'undefined') {
+      authState === 'loading' || authState === false
+        ? null
+        : authState === true
+        ? (setLoadingState(true), Router.push('/'))
+        : console.log({ authState })
+    }
+  }, [])
 
   const classes = useStyles()
   const [firstname, setFirstname] = useState<string>('')
@@ -41,7 +45,7 @@ const newUser: FC<InewUser> = (): JSX.Element => {
   const [password, setPassword] = useState<string>('')
   const [firstnameError, setFirstnameError] = useState<string>('')
   const [usernameError, setUsernameError] = useState<string>('')
-  const [passwordError, setpasswordError] = useState<string>('')
+  const [passwordError, setpasswordError] = useState<string>('') // todo setup confirm password
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
     e.preventDefault()
@@ -50,47 +54,64 @@ const newUser: FC<InewUser> = (): JSX.Element => {
     setUsernameError('')
     setpasswordError('')
 
-    fetch('/api/auth/new_user', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ firstname, lastname, username, password })
-    })
-      .then((res) => res.json())
-      .then(async (data) => {
-        if (data.success) {
-          fetch('/api/auth/callback/credentials', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              csrfToken: await getCsrfToken({}),
-              username: data.username,
-              password: data.password
-            })
+    setLoadingState(true)
+
+    getCsrfToken({})
+      .then((csrfToken) => {
+        fetch('/api/auth/new_user', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            csrfToken, //todo set up token verification
+            firstname,
+            lastname,
+            username,
+            password
           })
-            .then((res) => {
-              if (res.url.includes('?error=')) {
-                //error handling
-                setAuthState(0)
-                console.log(res)
-              } else {
-                Router.push(res.url)
-                setAuthState(1)
-              }
-            })
-            .catch((err) => console.log({ err }))
-        } else {
-          data.errors.forEach((err: any) => {
-            if (!!err.path) {
-              if (err.path === 'firstname') setFirstnameError(err.message)
-              if (err.path === 'username') setUsernameError(err.message)
-              if (err.path === 'password') setpasswordError(err.message)
+        })
+          .then(async (res) => res.json())
+          .then(async (data) => {
+            if (data.success) {
+              setLoadingState(true)
+
+              fetch('/api/auth/callback/credentials', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  csrfToken,
+                  username: data.username,
+                  password: data.password
+                })
+              })
+                .then((res) => {
+                  if (res.url.includes('?error=')) {
+                    // todo error handling if there any
+                    setAuthState(false)
+                    setLoadingState(false)
+                    console.log(res)
+                  } else {
+                    setLoadingState(true)
+                    setAuthState(true)
+                    Router.push(res.url)
+                  }
+                })
+                .catch((err) => (setLoadingState(false), console.log({ err })))
             } else {
-              setUsernameError(err.message)
+              setLoadingState(false)
+
+              data.errors.forEach((err: any) => {
+                if (!!err.path) {
+                  if (err.path === 'firstname') setFirstnameError(err.message)
+                  if (err.path === 'username') setUsernameError(err.message)
+                  if (err.path === 'password') setpasswordError(err.message)
+                } else {
+                  setUsernameError(err.message)
+                }
+              })
             }
           })
-        }
       })
-      .catch((err: any) => console.log(err))
+      .catch((err: any) => (setLoadingState(false), console.log({ err })))
   }
 
   return (

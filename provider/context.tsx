@@ -18,7 +18,9 @@ export const authContext = createContext<IAuthContext | null>(null)
 export const loadingContext = createContext<ILoadingContext | null>(null)
 
 export const context: FC<Iindex> = ({ children }): ReactElement => {
-  const [authState, setAuthState] = useState<0 | 1 | 2>(2)
+  const [authState, setAuthState] = useState<false | true | 'loading'>(
+    'loading'
+  )
   //* 2 = still loading
   //* 1 = forcetrue
   //* 0 = false

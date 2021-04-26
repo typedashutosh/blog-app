@@ -16,7 +16,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         const user: IUser | null = await UserModel.findById(_id)
         if (!!user) {
           res.json({ bookmarked: user.blogs.includes(BlogID) })
-        } else res.status(400).end()
+        } else res.status(204).end()
       }
 
       if (work === 'Add Bookmark') {

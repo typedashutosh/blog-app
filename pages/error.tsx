@@ -1,8 +1,17 @@
-import { FC } from 'react'
+import { FC, useContext, useEffect } from 'react'
 
-type Terror = {}
+import { ILoadingContext } from '../provider'
+import { loadingContext } from '../provider/context'
 
-const error: FC<Terror> = (): JSX.Element => {
+interface Ierror {}
+
+const error: FC<Ierror> = (): JSX.Element => {
+  const { setLoadingState } = useContext(loadingContext) as ILoadingContext
+
+  useEffect(() => {
+    setLoadingState(false)
+  }, [])
+
   return <div>THIS IS ERROR PAGE</div>
 }
 
