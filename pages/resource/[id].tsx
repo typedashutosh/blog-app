@@ -62,28 +62,6 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   }
 }
 
-// export const getServerSideProps: GetServerSideProps = async (
-//   context: GetServerSidePropsContext<ParsedUrlQuery>
-// ) => {
-//   //- Bookmarks search
-//   dbConnect()
-//   const session = await getSession(context)
-
-//   const data = await UserModel.findById(session?.user._id)
-//   console.log(data)
-//   // const isBookmarked = Boolean(data.length)
-//   //   ? data[0].blogs.includes(`${params?.id}`)
-//   //     ? true
-//   //     : false
-//   //   : false
-
-//   return {
-//     props: {
-//       data: null /* isBookmarked*/
-//     }
-//   }
-// }
-
 const useStyles = makeStyles({
   linearProgress: {
     position: 'fixed',
@@ -110,7 +88,12 @@ const blog: FC<IBlog> = ({ blog }) => {
         method: 'POST',
         body: JSON.stringify({ work: 'Find Bookmarks', BlogID: blog.sys.id })
       })
-        .then((res) => res.json())
+        .then((res) => {
+          if (res.status === 204) {
+            console.log(JSON.stringify({ session: false }))
+            return false
+          } else return res.json()
+        })
         .then(({ bookmarked }) => setIsBookmarked(bookmarked))
         .catch((err) => console.log(err))
     })()

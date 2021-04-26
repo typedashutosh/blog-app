@@ -1,6 +1,5 @@
 import { Session } from 'next-auth'
 import { signout } from 'next-auth/client'
-import Link from 'next/link'
 import { FC, ReactElement, useContext, useState } from 'react'
 
 import {
@@ -18,9 +17,9 @@ import {
   AccountCircleOutlined as AccountIcon,
   Menu as MenuIcon
 } from '@material-ui/icons'
-import { authContext } from '../provider/context'
-import { IAuthContext } from '../provider'
-
+import { authContext, loadingContext } from '../provider/context'
+import { IAuthContext, ILoadingContext } from '../provider'
+import Router from 'next/router'
 interface IHeader {
   session: Session | null | undefined
 }
@@ -36,15 +35,22 @@ const Header: FC<IHeader> = ({ session }): ReactElement => {
   const classes = useStyles()
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const { authState, setAuthState } = useContext(authContext) as IAuthContext
+  const { setLoadingState } = useContext(loadingContext) as ILoadingContext
   return (
     <AppBar position='static'>
       <Toolbar>
         <IconButton>
           <MenuIcon style={{ color: 'white' }} />
         </IconButton>
-        <Link href='/'>
-          <Typography className={classes.title}>E-Commerce</Typography>
-        </Link>
+        <Typography
+          onClick={() => {
+            setLoadingState(true)
+            Router.push('/')
+          }}
+          className={classes.title}
+        >
+          E-Commerce
+        </Typography>
 
         <Button
           aria-label='more'
@@ -70,13 +76,19 @@ const Header: FC<IHeader> = ({ session }): ReactElement => {
         >
           {!!authState && (
             <div>
-              <Link href='/settings'>
-                <MenuItem onClick={() => setAnchorEl(null)}>Settings</MenuItem>
-              </Link>
               <MenuItem
                 onClick={() => {
                   setAnchorEl(null)
-                  setAuthState(0)
+                  setLoadingState(true)
+                  Router.push('/settings')
+                }}
+              >
+                Settings
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  setAnchorEl(null)
+                  setAuthState(false)
                   signout()
                 }}
               >
@@ -86,12 +98,24 @@ const Header: FC<IHeader> = ({ session }): ReactElement => {
           )}
           {!authState && (
             <div>
-              <Link href='/signin'>
-                <MenuItem onClick={() => setAnchorEl(null)}>Login</MenuItem>
-              </Link>
-              <Link href='/new_user'>
-                <MenuItem onClick={() => setAnchorEl(null)}>Register</MenuItem>
-              </Link>
+              <MenuItem
+                onClick={() => {
+                  setAnchorEl(null)
+                  setLoadingState(true)
+                  Router.push('/signin')
+                }}
+              >
+                Login
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  setLoadingState(true)
+                  setAnchorEl(null)
+                  Router.push('/new_user')
+                }}
+              >
+                Register
+              </MenuItem>
             </div>
           )}
         </Menu>

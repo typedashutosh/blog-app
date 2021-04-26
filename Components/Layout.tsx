@@ -52,7 +52,7 @@ const Layout: FC<ILayout> = ({ children }): ReactElement => {
   useEffect(() => {
     getSession({}).then((session) => {
       setHeaderElement(<Header session={session} />)
-      setAuthState(session !== null ? 1 : 0)
+      setAuthState(session !== null ? true : false)
     })
   }, [authState])
 

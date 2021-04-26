@@ -11,11 +11,7 @@ import theme from '../utils/theme'
 
 interface I_app extends AppProps {}
 
-const _app: NextPage<I_app> = ({
-  Component,
-  pageProps,
-  router
-}): ReactElement => {
+const _app: NextPage<I_app> = ({ Component, pageProps }): ReactElement => {
   useEffect(() => {
     const jssStyles = document?.querySelector('#jss-server-side')
     jssStyles?.parentElement?.removeChild(jssStyles)

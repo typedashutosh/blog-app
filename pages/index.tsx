@@ -4,14 +4,15 @@ import {
   GetServerSidePropsContext,
   GetStaticProps
 } from 'next'
-import { FC, ReactElement } from 'react'
+import { ParsedUrlQuery } from 'node:querystring'
+import { FC, ReactElement, useContext, useEffect } from 'react'
 
 import { Container, makeStyles } from '@material-ui/core'
 
-import BlogCard from '../Components/BlogCard'
-import { IBlogCard } from '../Components/BlogCard'
+import BlogCard, { IBlogCard } from '../Components/BlogCard'
 import Carousel from '../Components/Carousel'
-import { ParsedUrlQuery } from 'node:querystring'
+import { ILoadingContext } from '../provider'
+import { loadingContext } from '../provider/context'
 
 interface Iindex {
   Blogs: IBlogCard['blog'][]
@@ -30,6 +31,12 @@ export const getServerSideProps: GetServerSideProps = async (
 const useStyles = makeStyles({})
 const index: FC<Iindex> = ({ Blogs }): ReactElement => {
   const classes = useStyles()
+  const { setLoadingState } = useContext(loadingContext) as ILoadingContext
+
+  useEffect(() => {
+    setLoadingState(false)
+  }, [])
+
   return (
     <>
       <Carousel />

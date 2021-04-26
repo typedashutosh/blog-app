@@ -1,7 +1,6 @@
-import { GetServerSideProps } from 'next'
-import { getCsrfToken, getSession } from 'next-auth/client'
+import { getCsrfToken } from 'next-auth/client'
 import Router from 'next/router'
-import { FC, FormEvent, useContext, useState } from 'react'
+import { FC, FormEvent, useContext, useEffect, useState } from 'react'
 
 import {
   Box,
@@ -14,8 +13,8 @@ import {
   Typography
 } from '@material-ui/core'
 
-import { IAuthContext } from '../provider'
-import { authContext } from '../provider/context'
+import { IAuthContext, ILoadingContext } from '../provider'
+import { authContext, loadingContext } from '../provider/context'
 
 interface ISignIn {}
 
@@ -33,14 +32,19 @@ const useStyles = makeStyles({
 
 const SignIn: FC<ISignIn> = (): JSX.Element => {
   const { authState, setAuthState } = useContext(authContext) as IAuthContext
+  const { setLoadingState } = useContext(loadingContext) as ILoadingContext
 
-  if (typeof window !== 'undefined') {
-    authState === 2 || authState === 0
-      ? null
-      : authState === 1
-      ? Router.push('/')
-      : console.log({ authState })
-  }
+  useEffect(() => {
+    setLoadingState(false)
+
+    if (typeof window !== 'undefined') {
+      authState === 'loading' || authState === false
+        ? null
+        : authState === true
+        ? (setLoadingState(true), Router.push('/'))
+        : console.log({ authState })
+    }
+  }, [])
 
   const classes = useStyles()
   const [username, setUsername] = useState<string>('')
@@ -49,7 +53,11 @@ const SignIn: FC<ISignIn> = (): JSX.Element => {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
     e.preventDefault()
+
     setLoginError('')
+
+    setLoadingState(true)
+
     getCsrfToken({}).then((csrfToken) =>
       fetch('api/auth/callback/credentials', {
         method: 'POST',
@@ -62,16 +70,18 @@ const SignIn: FC<ISignIn> = (): JSX.Element => {
       })
         .then((res) => {
           if (res.url.includes('?error=')) {
-            // console.log(res, username, password)
-            console.log(res) //- there is somekind of error on preview
-            setLoginError('Bad credentials')
-            setAuthState(0)
+            if (res.url.includes('?error=CredentialsSignin')) {
+              setLoginError('Bad credentials')
+            } else console.log(res)
+            setAuthState(false)
+            setLoadingState(false)
           } else {
+            setLoadingState(true)
+            setAuthState(true)
             Router.push(res.url)
-            setAuthState(1)
           }
         })
-        .catch((err) => console.log({ err }))
+        .catch((err) => (setLoadingState(false), console.log({ err })))
     )
   }
 
