@@ -10,7 +10,6 @@ import UserModel from '../models/User.model'
 import { IAuthContext, ILoadingContext } from '../provider'
 import { authContext, loadingContext } from '../provider/context'
 import dbConnect from '../utils/dbConnect'
-import setLoading from '../hooks/setLoading'
 
 interface Ibookmarked {
   Blogs: IBlogCard['blog'][]
