@@ -1,4 +1,4 @@
-import { FC, ReactElement } from 'react'
+import { FC, ReactElement, useContext } from 'react'
 import {
   Card,
   CardContent,
@@ -8,7 +8,8 @@ import {
 } from '@material-ui/core'
 import Router from 'next/router'
 import { Document } from '@contentful/rich-text-types'
-import setLoading from '../hooks/setLoading'
+import { loadingContext } from '../provider/context'
+import { ILoadingContext } from '../provider'
 export interface IBlogCard {
   blog: {
     fields: {
@@ -54,13 +55,14 @@ const useStyles = makeStyles({
 })
 
 const BlogCard: FC<IBlogCard> = ({ blog }): ReactElement => {
+  const {setLoadingState} = useContext(loadingContext)as ILoadingContext
   const classes = useStyles()
 
   return (
     <Card
       className={classes.root}
       onClick={() => {
-        setLoading(true)
+        setLoadingState(true)
         Router.push(`/resource/${blog.sys.id}`)
       }}
     >
